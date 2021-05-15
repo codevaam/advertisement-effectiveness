@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"
+        integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf"
+        crossorigin="anonymous"></script>
+
+    <script>
+        window.addEventListener("load", () => {
+            console.log(document.getElementById('adVideo'));
+            document.getElementById('adVideo').addEventListener('ended', handleVideoEnd, false);
+        })
+        async function handleVideoEnd(e) {
+            console.log("ran");
+            localStorage.setItem("skipped", false);
+            const data = {
+                region: region,
+                age: age,
+                playhead: parseInt(video.duration),
+                skipped: false
+            }
+            fetch("/survey", {
+                method: "POST",
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            window.location = "/analysis";
+        }
+
+
+        async function submit() {
+            var region = localStorage.getItem("region");
+            var age = localStorage.getItem("age");
+
+            localStorage.setItem("skipped", true);
+            var video = document.getElementById("adVideo");
+            localStorage.setItem("timeStamp", parseInt(video.currentTime));
+            const data = {
+                region: region,
+                age: age,
+                playhead: parseInt(video.currentTime),
+                skipped: true
+            }
+            const res = await fetch("/survey", {
+                method: "POST",
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            console.log(res);
+            localStorage.setItem("accuracy", res.data);
+            window.location = "/analysis";
+        }
+    </script>
+</head>
+
+<body>
+    <center>
+        <video src="./static/ad1.mp4" id="adVideo" controls width="80%"></video>
+    </center>
+    <div class="text-center">
+        <button class="btn btn-primary" onclick="submit()">SKIP</button>
+        <img src="{{ url_for('video_feed') }}" style="display: none;">
+    </div>
+</body>
+
+</html>

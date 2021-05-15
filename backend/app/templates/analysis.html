@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/login.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"
+        integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf"
+        crossorigin="anonymous"></script>
+    <title>Details</title>
+    <style>
+        body {
+            background-image: url("../static/background2.jpg");
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+
+        .card-style {
+            width: 50vh;
+            padding: 30px;
+        }
+
+        input {
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        var users = '{{ data }}'
+        console.log(users)
+        function submit() {
+            window.location = "/survey"
+        }
+    </script>
+</head>
+
+<body>
+    <h2 class="title text-white mt-3 ml-5">How did you find this survey?</h2>
+    <div class="card mx-auto card-style">
+        <div class="card-body">
+            <h3>Region: <span id="region"></span></h3>
+            <h3>Age: <span id="age"></span></h3>
+            <span>This is a video feed based ad survey, you'll need to give your browser your camera access</span><br />
+            <b><span>You can skip the ad if you don't find it interesting in the first 5 seconds</span></b><br />
+
+            <i>We have kept in mind the security of the users and your video feed is safe.</i>
+            <center>
+                <button class="btn btn-primary" onclick="submit()">Take another survey?</button>
+            </center>
+        </div>
+    </div>
+</body>
+
+</html>

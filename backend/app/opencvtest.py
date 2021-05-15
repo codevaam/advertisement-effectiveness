@@ -12,33 +12,41 @@ def midpoint(p1, p2):
 
 
 def get_gaze_ratio(eye_points, facial_landmarks):
-    left_eye_region = np.array([(facial_landmarks.part(eye_points[0]).x, facial_landmarks.part(eye_points[0]).y),
-                                (facial_landmarks.part(eye_points[1]).x, facial_landmarks.part(
-                                    eye_points[1]).y),
-                                (facial_landmarks.part(eye_points[2]).x, facial_landmarks.part(
-                                    eye_points[2]).y),
-                                (facial_landmarks.part(eye_points[3]).x, facial_landmarks.part(
-                                    eye_points[3]).y),
-                                (facial_landmarks.part(eye_points[4]).x, facial_landmarks.part(
-                                    eye_points[4]).y),
-                                (facial_landmarks.part(eye_points[5]).x, facial_landmarks.part(eye_points[5]).y)], np.int32)
+
+    # getting the eye region using dlib library
+    eye_region = np.array([(facial_landmarks.part(eye_points[0]).x, facial_landmarks.part(eye_points[0]).y),
+                           (facial_landmarks.part(eye_points[1]).x, facial_landmarks.part(
+                               eye_points[1]).y),
+                           (facial_landmarks.part(eye_points[2]).x, facial_landmarks.part(
+                               eye_points[2]).y),
+                           (facial_landmarks.part(eye_points[3]).x, facial_landmarks.part(
+                               eye_points[3]).y),
+                           (facial_landmarks.part(eye_points[4]).x, facial_landmarks.part(
+                               eye_points[4]).y),
+                           (facial_landmarks.part(eye_points[5]).x, facial_landmarks.part(eye_points[5]).y)], np.int32)
     height, width, _ = frame.shape
+
+    # creating mask with the same dimention as the frame
     mask = np.zeros((height, width), np.uint8)
 
-    cv2.polylines(mask, [left_eye_region], True, 255, 2)
-    cv2.fillPoly(mask, [left_eye_region], 255)
+    # changing pixel values of the mask with the eye region to 255
+    cv2.polylines(mask, [eye_region], True, 255, 2)
+    cv2.fillPoly(mask, [eye_region], 255)
 
+    # using bitwise and opteration getting eye region from input stream
     eye = cv2.bitwise_and(gray, gray, mask=mask)
 
-    min_x = np.min(left_eye_region[:, 0])
-    max_x = np.max(left_eye_region[:, 0])
+    # using min and max values of x and y values getting the eye region coordinates
+    min_x = np.min(eye_region[:, 0])
+    max_x = np.max(eye_region[:, 0])
 
-    min_y = np.min(left_eye_region[:, 1])
-    max_y = np.max(left_eye_region[:, 1])
-
-    gray_eye = eye[min_y: max_y, min_x: max_x]
+    min_y = np.min(eye_region[:, 1])
+    max_y = np.max(eye_region[:, 1])
 
     # apply simple threasholding to the grayscale eye image with value 70
+    gray_eye = eye[min_y: max_y, min_x: max_x]
+
+    cv2.imshow("gray eye", gray_eye)
     _, threshold_eye = cv2.threshold(
         gray_eye, 70, 255, cv2.THRESH_BINARY)
 
@@ -87,20 +95,21 @@ while True:
         gaze_ratio_right_eye = get_gaze_ratio(
             [42, 43, 44, 45, 46, 47], landmarks)
 
+        # taking average of left and right eye gaze ratio for better accuracy
         gaze_ratio = (gaze_ratio_left_eye + gaze_ratio_right_eye)/2
+        # cv2.putText(frame, str(gaze_ratio), (50, 150),
+        #             cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 3)
 
-        if gaze_ratio <= 0.8:
+        # determine using gaze ratio which direction is user seeing
+        if gaze_ratio <= 0.9:
             cv2.putText(frame, "RIGHT", (50, 150),
                         cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 3)
-        elif 0.8 < gaze_ratio < 1.5:
+        elif 0.9 < gaze_ratio < 1.0:
             cv2.putText(frame, "CENTER", (50, 150),
                         cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 3)
-        elif gaze_ratio > 1.5:
+        elif gaze_ratio > 1.0:
             cv2.putText(frame, "LEFT", (50, 150),
                         cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 3)
-        # cv2.imshow("mask", mask)
-        # cv2.imshow("left eye", left_eye)
-
     cv2.imshow("frame", frame)
     key = cv2.waitKey(1)
     if key == 27:

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/login.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"
+        integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf"
+        crossorigin="anonymous"></script>
+    <title>Details</title>
+    <style>
+        body {
+            background-image: url("../static/background2.jpg");
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+
+        .card-style {
+            top: 30vh;
+            width: 50vh;
+            padding: 30px;
+        }
+
+        input {
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        function submit() {
+            var age = document.getElementById("age");
+            var region = document.getElementById("region");
+
+            localStorage.setItem('age', age.value);
+            localStorage.setItem('region', region.value);
+
+            window.location = "/instructions"
+        }
+    </script>
+</head>
+
+<body>
+    <div class="card my-auto mx-auto card-style">
+        <div class="card-body">
+            <h3>Welcome to the Ad survey</h3>
+            <input id="age" type="number" class="form-control" placeholder="Age">
+            <input id="region" type="text" class="form-control" placeholder="Region">
+            <center>
+                <button class="btn btn-primary" onclick="submit()">NEXT</button>
+            </center>
+        </div>
+    </div>
+</body>
+
+</html>
