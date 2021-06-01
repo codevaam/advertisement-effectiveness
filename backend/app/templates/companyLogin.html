@@ -31,28 +31,19 @@
             margin-bottom: 10px;
         }
     </style>
-    <script>
-        function submit() {
-            var age = document.getElementById("age");
-            var region = document.getElementById("region");
-
-            localStorage.setItem('age', age.value);
-            localStorage.setItem('region', region.value);
-
-            window.location = "/instructions"
-        }
-    </script>
 </head>
 
 <body>
     <div class="card my-auto mx-auto card-style">
         <div class="card-body">
-            <h3>Welcome to the Ad survey</h3>
-            <input id="age" type="number" class="form-control" placeholder="Age">
-            <input id="region" type="text" class="form-control" placeholder="Region">
-            <center>
-                <button class="btn btn-primary" onclick="submit()">NEXT</button>
-            </center>
+            <h3>Analysis portal</h3>
+            <form method="POST">
+                <input id="uname" type="text" class="form-control" placeholder="Username">
+                <input id="psw" type="password" class="form-control" placeholder="Password">
+                <center>
+                    <button class="btn btn-primary" type="submit">LOGIN</button>
+                </center>
+            </form>
         </div>
     </div>
 </body>

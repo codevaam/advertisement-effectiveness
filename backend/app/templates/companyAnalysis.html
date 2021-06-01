@@ -12,11 +12,13 @@
         integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf"
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
     <title>Details</title>
     <style>
         body {
             background-image: url("../static/background2.jpg");
-            background-repeat: no-repeat;
+            background-repeat: repeat-y;
             min-height: 100vh;
         }
 
@@ -29,23 +31,52 @@
             margin-bottom: 10px;
         }
 
-        canvas {
-            height: 500px !important;
-            width: 500px !important;
+        .chart {
+            height: 50%;
+            width: 50%;
+            margin: auto;
+        }
+
+        .ageChart {
+            margin-top: 30px;
+            background-color: white;
         }
     </style>
+
+
     <script>
-        var users = '{{ data }}'
+        var pieData = '{{ data }}'
+        var users = '{{users}}'
+        j_users = JSON.parse(users.replace(/&#34;/g, '"'));
+        console.log(j_users)
+
+        below18 = j_users.filter(item => item.age < 18)
+        midage = j_users.filter(item => item.age >= 18 && item.age < 40)
+        over40 = j_users.filter(item => item.age >= 40)
+
+        console.log(below18)
+        console.log(midage)
+        console.log(over40)
+
+        var avg_time = 0
+        var avg_attn = 0
+        j_users.map(item => {
+            avg_attn += item.attention
+            avg_time += item.playhead
+        })
+        console.log(avg_time)
+
+
         window.addEventListener("load", () => {
-            var attention = localStorage.getItem("attention");
-            attention = (parseFloat(attention) * 100).toFixed(2);
+            attention = ((avg_attn * 100) / 10).toFixed(2);
             document.getElementById("attn").innerHTML = attention;
+            document.getElementById("watchtime").innerHTML = (avg_time / j_users.length).toFixed(2);
 
             var ctx = document.getElementById('pieChart').getContext('2d');
-
+            var ctx2 = document.getElementById('ageChart').getContext('2d');
             data = {
                 datasets: [{
-                    data: users,
+                    data: pieData,
                     backgroundColor: ["red", "blue"]
                 }],
 
@@ -76,8 +107,33 @@
                     }
                 },
             })
+            var ageArr = [];
+            ageArr.push(below18.length)
+            ageArr.push(midage.length)
+            ageArr.push(over40.length)
+            console.log()
+            const data2 = {
+                labels: ["<18", "18-40", ">40"],
+                datasets: [{
+                    label: 'Age Distribution',
+                    data: ageArr,
+                    backgroundColor: ["red", "blue", "green"]
+                }]
+            };
+
+            var ageChart = new Chart(ctx2, {
+                type: "bar",
+                data: data2,
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                },
+            })
         })
-        console.log(users)
+        console.log(pieData)
         function submit() {
             window.location = "/survey"
         }
@@ -88,11 +144,24 @@
 
 <body>
     <div class="mt-3 ml-5">
-        <h2 class="title text-white">How did you find this survey?</h2>
-        <h4 class="text-white">Your attention throught the advertisement was <b><span id="attn"></span></b></h4>
+        <center>
+            <h2 class="text-white">Your advertisement</h2>
+            <video src="./static/ad1.mp4" id="adVideo" controls width="80%"></video>
+        </center>
+        <h2 class="title text-white">How did users find this survey?</h2>
+        <h4 class="text-white">AVERAGE ATTENTION SPAN OF USERS: <b><span id="attn"></span> percentage</b></h4>
+        <h4 class="text-white">AVERAGE WATCH DURATION OF USERS: <b><span id="watchtime"></span> seconds</b></h4>
     </div>
     <div class="chart">
-        <canvas id="pieChart" width="400" height="400"></canvas>
+        <canvas id="pieChart"></canvas>
+    </div>
+
+    <div class="ageChart">
+        <canvas id="ageChart"></canvas>
+    </div>
+
+    <div class="regionChart">
+
     </div>
 </body>
 

@@ -8,6 +8,7 @@
     <title>Survey</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"
         integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf"
         crossorigin="anonymous"></script>
@@ -17,30 +18,35 @@
             console.log(document.getElementById('adVideo'));
             document.getElementById('adVideo').addEventListener('ended', handleVideoEnd, false);
         })
-        async function handleVideoEnd(e) {
-            console.log("ran");
-            localStorage.setItem("skipped", false);
-            const data = {
+        var region = localStorage.getItem("region");
+        var age = localStorage.getItem("age");
+        function handleVideoEnd() {
+            var video = document.getElementById("adVideo");
+            const data2 = {
                 region: region,
                 age: age,
-                playhead: parseInt(video.duration),
-                skipped: false
+                playhead: parseInt(document.getElementById('adVideo').duration),
+                skipped: "false"
             }
+            console.log(data2);
             fetch("/survey", {
                 method: "POST",
                 mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(data)
-            })
+                body: JSON.stringify(data2)
+            }).then(res => res.json())
+                .then(data => {
+                    localStorage.setItem("attention", data.attention);
+                });
+            localStorage.setItem("skipped", false);
             window.location = "/analysis";
         }
 
 
-        async function submit() {
-            var region = localStorage.getItem("region");
-            var age = localStorage.getItem("age");
+        function submit() {
+
 
             localStorage.setItem("skipped", true);
             var video = document.getElementById("adVideo");
@@ -49,27 +55,26 @@
                 region: region,
                 age: age,
                 playhead: parseInt(video.currentTime),
-                skipped: true
+                skipped: "true"
             }
-            const res = await fetch("/survey", {
+            fetch("/survey", {
                 method: "POST",
                 mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(data)
-            })
-            console.log(res);
-            localStorage.setItem("accuracy", res.data);
+            }).then(res => res.json())
+                .then(data => {
+                    localStorage.setItem("attention", data.attention);
+                });
             window.location = "/analysis";
         }
     </script>
 </head>
 
 <body>
-    <center>
-        <video src="./static/ad1.mp4" id="adVideo" controls width="80%"></video>
-    </center>
+
     <div class="text-center">
         <button class="btn btn-primary" onclick="submit()">SKIP</button>
         <img src="{{ url_for('video_feed') }}" style="display: none;">

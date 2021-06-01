@@ -1,9 +1,12 @@
 from app import app
 import numpy as np
 import cv2
-from flask import render_template, Response, request, jsonify
+from flask import render_template, Response, request, jsonify, redirect, url_for
 import dlib
 import pymongo
+
+from bson.json_util import dumps
+from bson import json_util
 
 cap = cv2.VideoCapture(cv2.CAP_V4L2)
 detector = dlib.get_frontal_face_detector()
@@ -22,6 +25,16 @@ def index():
     return render_template("login.html")
 
 
+@app.route("/admin", methods=["GET", "POST"])
+def login():
+    if request.method == "GET":
+        return render_template("companyLogin.html")
+
+    if request.method == "POST":
+        print(request.json)
+        return redirect(url_for("companyAnalysis"))
+
+
 @app.route("/survey", methods=["GET", "POST"])
 def survey():
     if request.method == "GET":
@@ -36,13 +49,12 @@ def survey():
         print(data)
         x = users.insert_one(data)
 
+        res = {'attention': attention}
         # region = data.get("region")
         # age = int(data.get("age"))
         # play_head = data.get("playhead")
         # is_skipped = data.get("skipped")
-        return jsonify(
-            att=attention
-        )
+        return jsonify(res)
 
 
 @app.route("/instructions")
@@ -52,7 +64,30 @@ def instructions():
 
 @app.route("/analysis", methods=["GET"])
 def analysis():
-    return render_template("analysis.html", data=list(users.find()))
+    skip_count = users.count_documents({"skipped": "true"})
+    total_count = users.count_documents({})
+
+    pieData = []
+    pieData.append(skip_count)
+    pieData.append(total_count-skip_count)
+
+    print(skip_count)
+    return render_template("analysis.html", data=pieData)
+
+
+@app.route("/companyAnalysis", methods=["GET"])
+def companyAnalysis():
+    skip_count = users.count_documents({"skipped": "true"})
+    total_count = users.count_documents({})
+
+    pieData = []
+    pieData.append(skip_count)
+    pieData.append(total_count-skip_count)
+
+    allUsers = users.find({})
+    json_data = dumps(list(allUsers))
+
+    return render_template("companyAnalysis.html", data=pieData, users=json_data)
 
 
 def midpoint(p1, p2):
