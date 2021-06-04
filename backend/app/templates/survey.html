@@ -38,6 +38,7 @@
                 body: JSON.stringify(data2)
             }).then(res => res.json())
                 .then(data => {
+                    console.log(data)
                     localStorage.setItem("attention", data.attention);
                 });
             localStorage.setItem("skipped", false);
@@ -74,7 +75,10 @@
 </head>
 
 <body>
-
+    <center>
+        <h2 class="text-white">Your advertisement</h2>
+        <video src="./static/ad1.mp4" id="adVideo" controls width="80%"></video>
+    </center>
     <div class="text-center">
         <button class="btn btn-primary" onclick="submit()">SKIP</button>
         <img src="{{ url_for('video_feed') }}" style="display: none;">

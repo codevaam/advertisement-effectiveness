@@ -41,6 +41,17 @@
             margin-top: 30px;
             background-color: white;
         }
+
+        .attnscore {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 2px 2px 2px;
+            margin: auto;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            width: 30%;
+            padding: 2%;
+        }
     </style>
 
 
@@ -58,6 +69,21 @@
         console.log(midage)
         console.log(over40)
 
+        var attn18 = 0, time18 = 0, attn35 = 0, time35 = 0, attn45 = 0, time45 = 0;
+        below18.map(item => {
+            attn18 += item.attention;
+            time18 += item.playhead
+        })
+
+        midage.map(item => {
+            attn35 += item.attention;
+            time35 += item.playhead
+        })
+        console.log(attn35, time35)
+        over40.map(item => {
+            attn45 += item.attention;
+            time45 += item.playhead
+        })
         var avg_time = 0
         var avg_attn = 0
         j_users.map(item => {
@@ -72,6 +98,9 @@
             document.getElementById("attn").innerHTML = attention;
             document.getElementById("watchtime").innerHTML = (avg_time / j_users.length).toFixed(2);
 
+            document.getElementById("attn18").innerHTML = (attn18 / time18) == NaN ? 0 : (attn18 / time18).toFixed(2)
+            document.getElementById("attn35").innerHTML = (attn35 / time35) == NaN ? 0 : (attn35 / time35).toFixed(2)
+            document.getElementById("attn45").innerHTML = (attn45 / time45) == NaN ? 0 : (attn45 / time45).toFixed(2)
             var ctx = document.getElementById('pieChart').getContext('2d');
             var ctx2 = document.getElementById('ageChart').getContext('2d');
             data = {
@@ -162,6 +191,13 @@
 
     <div class="regionChart">
 
+    </div>
+
+    <div class="attnscore">
+        <h2>Attention score</h2>
+        <h3><span>Age >18:</span><span id="attn18"></span></h3>
+        <h3><span>Age 18-45:</span><span id="attn35"></span></h3>
+        <h3><span>Age 45+:</span><span id="attn45"></span></h3>
     </div>
 </body>
 
